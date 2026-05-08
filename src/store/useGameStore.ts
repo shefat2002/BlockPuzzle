@@ -1,8 +1,10 @@
 import { create } from 'zustand';
-import { GameBoard, Grid } from '../engine/GameBoard';
+import { GameBoard } from '../engine/GameBoard';
+import type { Grid } from '../engine/GameBoard';
 import { getRandomBlocks } from '../engine/blocks';
 import type { Block } from '../engine/blocks';
 import { calculateBaseScore, calculateLineScore } from '../engine/scoring';
+import { audioManager } from '../engine/audio';
 
 interface FloatingText {
   id: number;
@@ -56,6 +58,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const newFloatingTexts = [...state.floatingTexts];
 
     if (linesCleared > 0) {
+      audioManager.playClearSound(newCombo + 1);
       newCombo += 1;
       const linePoints = calculateLineScore(linesCleared, newCombo);
       newScore += linePoints;
@@ -76,6 +79,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         });
       }
     } else {
+      audioManager.playPlaceSound();
       newCombo = 0;
       newFloatingTexts.push({
         id: nextTextId++,
@@ -95,6 +99,10 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     const remainingShapes = nextBlocks.filter(b => b !== null).map(b => b!.shape);
     const gameOver = GameBoard.checkGameOver(newGrid, remainingShapes);
+
+    if (gameOver && !state.isGameOver) {
+      audioManager.playGameOverSound();
+    }
 
     set({
       grid: newGrid,
@@ -125,4 +133,3 @@ export const useGameStore = create<GameState>((set, get) => ({
     });
   }
 }));
-);
