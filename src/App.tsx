@@ -3,6 +3,7 @@ import { GridComponent } from './components/Grid';
 import { BlockSelector } from './components/BlockSelector';
 import { ScoreBoard } from './components/ScoreBoard';
 import { GameOverModal } from './components/GameOverModal';
+import { Footer } from './components/Footer';
 import { useDragStore } from './store/useDragStore';
 import { useGameStore } from './store/useGameStore';
 
@@ -73,6 +74,7 @@ function App() {
       <GridComponent />
       <BlockSelector />
       <GameOverModal />
+      <Footer />
 
       {/* Floating Dragged Block */}
       {isDragging && draggedBlock && (
