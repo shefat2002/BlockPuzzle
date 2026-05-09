@@ -31,6 +31,7 @@ let nextTextId = 0;
 export const useGameStore = create<GameState>((set, get) => ({
   grid: GameBoard.createEmptyGrid(),
   score: 0,
+  bestScore: parseInt(localStorage.getItem('block_puzzle_best_score') || '0', 10),
   combo: 0,
   availableBlocks: getRandomBlocks(3),
   isGameOver: false,
