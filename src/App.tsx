@@ -23,20 +23,32 @@ function App() {
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
-      if (isDragging) {
+      if (isDragging && draggedBlock) {
         updateDrag(e);
 
-        // Calculate hover based on DOM elements under pointer
-        const elements = document.elementsFromPoint(e.clientX, e.clientY);
+        // Rendered cell size is 35px in the floating block. 
+        // Block is shifted ABOVE the finger to not be hidden by it.
+        const cellVisualSize = 35;
+        const blockHeight = draggedBlock.shape.length * cellVisualSize;
+        const yOffset = -40; // Same as marginTop in rendering
+        
+        // Find visual center of the floating block
+        const visualCenterX = e.clientX;
+        const visualCenterY = e.clientY + yOffset - (blockHeight / 2);
+
+        // Calculate hover based on DOM elements under the visual center of the block
+        const elements = document.elementsFromPoint(visualCenterX, visualCenterY);
         const cell = elements.find(el => el.hasAttribute('data-row') && el.hasAttribute('data-col'));
+        
         if (cell) {
-          const row = parseInt(cell.getAttribute('data-row') || '-1', 10);
-          const col = parseInt(cell.getAttribute('data-col') || '-1', 10);
+          const centerRow = parseInt(cell.getAttribute('data-row') || '-1', 10);
+          const centerCol = parseInt(cell.getAttribute('data-col') || '-1', 10);
           
-          // Since pointer is usually grabbed from the center of the block visual, 
-          // we might need offsets, but for simplicity, we map pointer directly to the top-left cell of the block.
-          if (row !== -1 && col !== -1) {
-            setHoverPos({ row, col });
+          if (centerRow !== -1 && centerCol !== -1) {
+            // Offset back to top-left cell based on the block's dimensions
+            const hoverRow = centerRow - Math.floor(draggedBlock.shape.length / 2);
+            const hoverCol = centerCol - Math.floor(draggedBlock.shape[0].length / 2);
+            setHoverPos({ row: hoverRow, col: hoverCol });
           }
         } else {
           setHoverPos(null);
@@ -60,7 +72,7 @@ function App() {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [isDragging, draggedIndex, hoverPos, attemptPlaceBlock, updateDrag, setHoverPos, endDrag]);
+  }, [isDragging, draggedBlock, draggedIndex, hoverPos, attemptPlaceBlock, updateDrag, setHoverPos, endDrag]);
 
   const floatingTexts = useGameStore(state => state.floatingTexts);
   const removeFloatingText = useGameStore(state => state.removeFloatingText);
