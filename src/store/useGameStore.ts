@@ -16,6 +16,7 @@ interface FloatingText {
 interface GameState {
   grid: Grid;
   score: number;
+  bestScore: number;
   combo: number;
   availableBlocks: (Block | null)[];
   isGameOver: boolean;
@@ -105,9 +106,16 @@ export const useGameStore = create<GameState>((set, get) => ({
       audioManager.playGameOverSound();
     }
 
+    let newBestScore = state.bestScore;
+    if (newScore > newBestScore) {
+      newBestScore = newScore;
+      localStorage.setItem('block_puzzle_best_score', newBestScore.toString());
+    }
+
     set({
       grid: newGrid,
       score: newScore,
+      bestScore: newBestScore,
       combo: newCombo,
       availableBlocks: nextBlocks,
       isGameOver: gameOver,

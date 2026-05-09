@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export const ScoreBoard: React.FC = () => {
   const score = useGameStore((state) => state.score);
+  const bestScore = useGameStore((state) => state.bestScore);
   const combo = useGameStore((state) => state.combo);
 
   return (
