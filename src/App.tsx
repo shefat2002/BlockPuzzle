@@ -26,15 +26,9 @@ function App() {
       if (isDragging && draggedBlock) {
         updateDrag(e);
 
-        // Rendered cell size is 35px in the floating block. 
-        // Block is shifted ABOVE the finger to not be hidden by it.
-        const cellVisualSize = 35;
-        const blockHeight = draggedBlock.shape.length * cellVisualSize;
-        const yOffset = -40; // Same as marginTop in rendering
-        
-        // Find visual center of the floating block
+        // Find visual center of the floating block (which is centered on pointer)
         const visualCenterX = e.clientX;
-        const visualCenterY = e.clientY + yOffset - (blockHeight / 2);
+        const visualCenterY = e.clientY;
 
         // Calculate hover based on DOM elements under the visual center of the block
         const elements = document.elementsFromPoint(visualCenterX, visualCenterY);
